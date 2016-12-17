@@ -1,6 +1,5 @@
 #include "Inodos.h"
 
-
 //Asumiendo arquitectura de 32bits, tenemos bloques de 1Kbyte y cada enlace 
 //tiene 4 bytes, por lo que cada bloque podra tener 1024/4 = 256 direcciones 
 //Cual es la maxima cantidad de bloques de punteros?
@@ -57,7 +56,7 @@ void Inodos::mkfile(const char* _name, int _permission, int _ownerid, int _group
 	}
 
 	int index = next_free();
-	
+
 	strcpy(Inodes[index].name, _name);
 	Inodes[index].file_mode = _permission;
 	Inodes[index].ownerid = _ownerid;
@@ -66,7 +65,7 @@ void Inodos::mkfile(const char* _name, int _permission, int _ownerid, int _group
 	Inodes[index].isFile = true;
 	Inodes[index].used = true;
 	Inodes[index].size = _sizeofData;
-	cout<<_sizeofData<<endl;
+
 	for (int i=0;i<4;i++) 
 	{
 		Inodes[index].directs[i] = _blocks.saveBlock(_data+(BLOCK_SIZE*i), _sizeofData>=BLOCK_SIZE?BLOCK_SIZE:_sizeofData);

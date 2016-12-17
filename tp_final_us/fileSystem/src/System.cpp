@@ -1,4 +1,5 @@
 #include "System.h"
+#include <climits>
 
 System::System() {
 	
@@ -167,8 +168,34 @@ void System::runSystem()
 					cout<<"touch: falta el contenido del archivo"<<endl;
 					break;
 				}
-				string content = *itcommands;
-				fs.makeFile(name,(unsigned char*)(content.c_str()),(unsigned char)(content.length()));
+				string content;
+				if (!(*itcommands).compare("<"))
+				{
+					itcommands++;
+					ifstream t(_TEMP_DIR+(*itcommands));
+					if (!t.fail())
+					{
+						t.seekg(0, std::ios::end);
+						content.reserve(t.tellg());
+						t.seekg(0, std::ios::beg);
+						
+						content.assign((std::istreambuf_iterator<char>(t)),std::istreambuf_iterator<char>());
+					}
+					else
+					{
+						cout<<"Invalid file"<<endl;
+					}
+				}
+				else
+				{
+					content = "";
+					while (itcommands!=commands.end())
+					{
+						content+=*itcommands;
+						itcommands++;
+					}
+				}
+				fs.makeFile(name,(unsigned char*)(content.c_str()),content.length());
 				break;
 			}
 		case str2int("rm"):

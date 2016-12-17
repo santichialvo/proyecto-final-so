@@ -207,6 +207,11 @@ void FileSystem::makeFile(string _name, int _father, int _permission, byte* _dat
 		cout<<"No tiene permiso para editar esta carpeta"<<endl;
 		return;
 	}
+	if (searchOnInode(_name,_father)!=-1)
+	{
+		cout<<"touch: No se puede crear el archivo "+_name+": El archivo ya existe"<<endl;
+		return;
+	}
 	Inodes->mkfile(_name.c_str(), _permission, currentUserID,currentGroupUserID, _father, _data, _sizeofData, *pointers, *blocks);
 }
 
@@ -222,9 +227,15 @@ void FileSystem::makeDir(string _name, int _father, int _permission)
 
 void FileSystem::del(int _inode)
 {
+	if (_inode==-1)
+	{
+		cout<<"El archivo/directorio no existe"<<endl;
+		return;
+	}
+	
 	if(!getPermission(_inode,1)&&!getPermission(_inode,2))
 	{
-		cout<<"No tiene permiso para borrar este directorio o archivo"<<endl;
+		cout<<"No tiene permisos para borrar este directorio o archivo"<<endl;
 		return;
 	}
 	
