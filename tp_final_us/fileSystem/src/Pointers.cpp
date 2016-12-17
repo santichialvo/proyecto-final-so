@@ -7,11 +7,10 @@ using namespace std;
 Pointers::Pointers(char* _path) 
 {
 	ifstream fs(_path, ios::binary);
-	for(int i=0;i<256;i++)
+	for(int i=0;i<POINTERSQTY;i++)
 	{
-		pointers[i].index = (int*)malloc(4*sizeof(int));
-		
-		fs.read((char*)pointers[i].index, 4*sizeof(int));
+		pointers[i].index = (int*)malloc(sizeof(int));
+		fs.read((char*)pointers[i].index, sizeof(int));
 		fs.read((char*)&pointers[i].used, sizeof(bool));
 	}
 	fs.close();
@@ -21,11 +20,12 @@ int Pointers::saveDirect(byte* _data, int _sizeofData, Block &_blocks)
 {
 	int index=findNext();
 	int i=0;
-	while (_sizeofData<=0||i==4)
+	while (_sizeofData>0 && i<POINTERSQTY)
 	{
 		pointers[index].index[i] = 
-			_blocks.saveBlock(_data+(256*i), _sizeofData>=256?256:_sizeofData);
-		_sizeofData -= 256;
+			_blocks.saveBlock(_data+(BLOCK_SIZE*i), _sizeofData>=BLOCK_SIZE?BLOCK_SIZE:_sizeofData);
+		_sizeofData -= BLOCK_SIZE;
+		i++;
 	}
 	return index;
 }
@@ -34,11 +34,13 @@ int Pointers::saveIndirect(byte* _data, int _sizeofData, Block &_blocks)
 {
 	int index=findNext();
 	int i=0;
-	while (_sizeofData<0||i==4)
+	while (_sizeofData>0 && i<POINTERSQTY)
 	{
 		pointers[i].index[i] = 
-			saveDirect(_data+(1024*i),_sizeofData>=1024?1024:_sizeofData,_blocks);
-		_sizeofData-=1024;
+			saveDirect(_data+(BLOCK_SIZE*i),_sizeofData>=BLOCK_SIZE?BLOCK_SIZE:_sizeofData,_blocks);
+		_sizeofData-=(BLOCK_SIZE*POINTERSPERBLOCKQTY);
+		if (_sizeofData<=0) break;
+		i++;
 	}
 	return index;
 }
@@ -55,24 +57,12 @@ int Pointers::findNext()
 			return i;
 }
 
-void Pointers::saveToFile(char* _path)
-{
-	
-	///Para crear el archivo de nuevo en blanco.
-//	Puntero punt;
-//	punt.Index[0] = 0;
-//	punt.Index[1] = 0;
-//	punt.Index[2] = 0;
-//	punt.Index[3] = 0;
-//	punt.Used = false;
-//	
-//	for(int i=0; i<256; i++)
-//		punteros[i] = punt;
-	
+void Pointers::saveToFile(const char* _path)
+{	
 	ofstream fs(_path, ios::binary);
-	for(int i=0; i<256; i++)
+	for(int i=0; i<POINTERSQTY; i++)
 	{
-		fs.write((const char*)pointers[i].index, 4*sizeof(int));
+		fs.write((const char*)pointers[i].index, POINTERSPERBLOCKQTY*sizeof(int));
 		fs.write((const char*)&pointers[i].used, sizeof(bool));
 	}
 	fs.close();
@@ -80,10 +70,10 @@ void Pointers::saveToFile(char* _path)
 
 void Pointers::deleteDirect(int _index, Block &_blocks, int _sizeofData)
 {
-	for(int i=0;i<4;i++)
+	for(int i=0;i<POINTERSPERBLOCKQTY;i++)
 	{
 		_blocks.deleteBlock(pointers[_index].index[i]);
-		_sizeofData -= 256;
+		_sizeofData -= BLOCK_SIZE;
 		if(_sizeofData <= 0) return;
 	}
 }

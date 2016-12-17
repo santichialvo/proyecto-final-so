@@ -1,0 +1,35 @@
+﻿Se le solicita que implemente una versión simplificada de un sistema de gestión de archivos. 
+En el mismo soportará la siguiente interfaz:
+
+    
+Crear fs: genera un directorio llamado raíz (“/”) a través de un inodo.
+    
+Crear / eliminar directorio: genera las estructuras necesarias para crear o eliminar un directorio nuevo en 
+la posición indicada por el usuario. Considere un directorio tiene una estructura de árbol
+    
+Crear archivo: crea las estructuras de datos asociadas a un archivo de texto. El contenido del archivo será 
+ingresado por teclado o desde un archivo.
+    
+Eliminar archivo: elimina las estructuras asociadas a un archivo
+     
+Ver archivo / directorio: muestra por pantalla la estructura de inodos asociada  
+
+	
+Dado que los archivos y directorios tienen permisos para los diferentes usuarios, el sistema deberá 
+chequear que el usuario tenga el privilegio para concretar la tarea.
+
+	
+La estructura de datos que permite guardar la información sobre un archivo en disco es el inodo. 
+En este contexto, dado que la información sobre un archivo se mantendrá solamente en memoria, 
+el inodo contendrá mínimamente, información sobre los privilegios que cada tipo de usuario tiene, 
+nombre de archivo y un conjunto de bloques. 
+Considere:
+
+- Cada bloque tiene 1 Kbytes
+
+- Cada enlace requiere 4 bytes
+
+- Hay 4 enlaces directos, 
+1 indirecto simple y 1 indirecto doble
+
+

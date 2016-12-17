@@ -1,6 +1,5 @@
 #include "System.h"
 
-
 System::System() {
 	
 }
@@ -79,6 +78,9 @@ void System::runSystem()
 			}
 		case str2int("exit"):
 			{
+				fs.save_blocks("..\\data\\block_data.bin");
+				fs.save_pointers("..\\data\\pointer_data.bin");
+				fs.save_inodes("..\\data\\inode_data.bin");
 				exit(0);
 				break;
 			}
@@ -166,7 +168,7 @@ void System::runSystem()
 					break;
 				}
 				string content = *itcommands;
-				fs.makeFile(name,(unsigned char*)(content.c_str()),(int)(content.length()));
+				fs.makeFile(name,(unsigned char*)(content.c_str()),(unsigned char)(content.length()));
 				break;
 			}
 		case str2int("rm"):
@@ -178,6 +180,24 @@ void System::runSystem()
 					break;
 				}
 				fs.erase(*itcommands);
+				break;
+			}
+		case str2int("save"):
+			{
+				fs.save_blocks("..\\data\\block_data.bin");
+				fs.save_pointers("..\\data\\pointer_data.bin");
+				fs.save_inodes("..\\data\\inode_data.bin");
+				break;
+			}
+		case str2int("su"):
+			{
+				itcommands++;
+				if (itcommands==commands.end())
+				{
+					cout<<"su: operacion invalida"<<endl;
+					break;
+				}
+				fs.changeUser(atoi((*itcommands).c_str()));
 				break;
 			}
 		default:

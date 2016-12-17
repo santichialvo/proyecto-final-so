@@ -2,21 +2,20 @@
 #define BLOCK_H
 
 typedef unsigned char byte;
-#define BYTE_AMOUNT 65536
+#define BLOCK_QTY 64
+#define BLOCK_SIZE 1024
+#define BYTE_AMOUNT BLOCK_SIZE*BLOCK_QTY
 
 class Block {
 private:
-	int  blockAmount;
-	int  sizeofBlock;
 	byte data[BYTE_AMOUNT];
 public:
-	Block(int _blockAmount, char *_path);
-	void setBlockAmount(int _blockAmount);
+	Block(char *_path);
 	byte* getBlock(int _index);
 	int saveBlock(byte* _data, int _sizeofData);
 	void deleteBlock(int _index);
 	void loadFromFile(char* _path);
-	void saveToFile(char* _path);
+	void saveToFile(const char* _path);
 	~Block();
 };
 
