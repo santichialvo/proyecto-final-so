@@ -2,9 +2,9 @@
 
 FileSystem::FileSystem() 
 {
-	blocks = new Block("..\\data\\block_data.bin");
-	pointers = new Pointers("..\\data\\pointer_data.bin");
-	Inodes = new Inodos("..\\data\\inode_data.bin");
+	blocks = new Block(_TEMP_DIR"block_data.bin");
+	pointers = new Pointers(_TEMP_DIR"pointer_data.bin");
+	Inodes = new Inodos(_TEMP_DIR"inode_data.bin");
 	
 	User root,santiago;
 	strcpy(root.userName,"root");
@@ -123,7 +123,7 @@ void FileSystem::changeDir(string _dir)
 		cout<<"No tiene permisos para acceder a este directorio"<<endl;
 		return;
 	}
-	if(inode==-1 || Inodes->getInodo(actualInode).isFile)
+	if(inode==-1 || Inodes->getInodo(inode).isFile)
 		cout<<"No existe el directorio"<<endl;
 	else
 		actualInode = inode;

@@ -78,9 +78,9 @@ void System::runSystem()
 			}
 		case str2int("exit"):
 			{
-				fs.save_blocks("..\\data\\block_data.bin");
-				fs.save_pointers("..\\data\\pointer_data.bin");
-				fs.save_inodes("..\\data\\inode_data.bin");
+				fs.save_blocks(_TEMP_DIR"block_data.bin");
+				fs.save_pointers(_TEMP_DIR"pointer_data.bin");
+				fs.save_inodes(_TEMP_DIR"inode_data.bin");
 				exit(0);
 				break;
 			}
@@ -184,9 +184,9 @@ void System::runSystem()
 			}
 		case str2int("save"):
 			{
-				fs.save_blocks("..\\data\\block_data.bin");
-				fs.save_pointers("..\\data\\pointer_data.bin");
-				fs.save_inodes("..\\data\\inode_data.bin");
+				fs.save_blocks(_TEMP_DIR"block_data.bin");
+				fs.save_pointers(_TEMP_DIR"pointer_data.bin");
+				fs.save_inodes(_TEMP_DIR"inode_data.bin");
 				break;
 			}
 		case str2int("su"):
