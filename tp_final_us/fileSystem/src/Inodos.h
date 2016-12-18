@@ -29,8 +29,8 @@ struct Inodo {
 class Inodos {
 private:
 	
-	Inodo *Inodes;     	//the Inodes
-	int   next_free(); 	//next Inode free
+	Inodo Inodes[INODESQTY];     	//the Inodes
+	int   next_free(); 				//next Inode free
 
 public:
 	
@@ -43,6 +43,7 @@ public:
 	Inodo getInodo		(int _index);
 	void changeFather	(int _index, int _indexNewFather);
 	void saveToFile		(const char* _path);
+	void changeFileMode	(int _index, int _newFileMode);
 	
 	~Inodos();
 };

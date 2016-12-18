@@ -20,7 +20,7 @@ struct Group {
 };
 
 struct User {
-	char*	userName=new char[10];
+	char	userName[10];
 	int		UserID;
 };
 
@@ -40,7 +40,7 @@ private:
 public:
 	FileSystem();
 	void WritePrompt    ();
-	void listChildren   ();
+	void listChildren   (int _mode);
 	void increaseLevel  ();
 	void changeDir      (string _dir);
 	void makeFile       (string _name, int _father, int _permission, byte* _data, int _sizeofData);
@@ -51,7 +51,8 @@ public:
 	void makeFile       (string _path, unsigned char* _data, int _size);
 	void makeDir        (string _path);
 	void move           (string _from, string _to);
-	void chmod 			(int _newmode);
+	void chmod 			(int _newmode, string _path);
+	int showFileMode	(int _filemode,int _mode);
 	void erase          (string _path);
 	void save_blocks    (string _path);
 	void save_inodes    (string _path);

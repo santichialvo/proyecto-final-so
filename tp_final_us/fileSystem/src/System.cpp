@@ -10,6 +10,15 @@ constexpr unsigned int str2int(const char* str, int h = 0)
 	return !str[h] ? 5381:(str2int(str, h+1)*33)^str[h];
 }
 
+int transformFileMode(string _filemode)
+{
+	int others = atoi(_filemode.substr(2,1).c_str());
+	int groups = atoi(_filemode.substr(1,1).c_str())<<3;
+	int owner =  atoi(_filemode.substr(0,1).c_str())<<6;
+	
+	return others|groups|owner;
+}
+
 void System::splitBySpaces(string &command, list<string> &commands)
 {
 	int pos=0,initialPos=0;
@@ -43,7 +52,9 @@ void System::showHelp()
 	cout << "#-mv 'v1' 'v2'          : Mueve el archivo o directorio de 'v1' a 'v2'.        #" << endl;
 	cout << "#-rm 'v'                : Elimina el archivo o directorio (recursivo).         #" << endl;
 	cout << "#-ls                    : Lista los archivos y carpetas en el directorio acual.#" << endl;
+	cout << "#-ls -l                 : Lista los archivos y carpetas con modos de acceso.	#" << endl;
 	cout << "#-tree                  : Muestra el arbol del sistema completa.               #" << endl;
+	cout << "#-save                  : Salva el contenido actual del FileSystem				#" << endl;
 	cout << "#-exit                  : Termina el programa.                                 #" << endl;
 	cout << "################################################################################" << endl;
 	rlutil::setColor(15);
@@ -120,7 +131,9 @@ void System::runSystem()
 			{
 				itcommands++;
 				if (itcommands==commands.end())
-					fs.listChildren();
+					fs.listChildren(0);
+				else if (!(*itcommands).compare("-l"))
+					fs.listChildren(1);
 				else
 					cout<<"ls: operacion invalida"<<endl;
 				break;
@@ -225,6 +238,29 @@ void System::runSystem()
 					break;
 				}
 				fs.changeUser(atoi((*itcommands).c_str()));
+				break;
+			}
+		case str2int("chmod"):
+			{
+				itcommands++;
+				if (itcommands==commands.end())
+				{
+					cout<<"chmod: operacion invalida"<<endl;
+					break;
+				}
+				if (atoi((*itcommands).c_str())<0||atoi((*itcommands).c_str())>777)
+				{
+					cout<<"chmod: operacion invalida"<<endl;
+					break;
+				}
+				int newmode=transformFileMode((*itcommands).c_str());
+				itcommands++;
+				if (itcommands==commands.end())
+				{
+					cout<<"chmod: falta el directorio/archivo"<<endl;
+					break;
+				}
+				fs.chmod(newmode,*itcommands);
 				break;
 			}
 		default:

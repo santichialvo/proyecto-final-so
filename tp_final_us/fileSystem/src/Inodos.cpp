@@ -7,7 +7,7 @@
 using namespace std;
 
 Inodos::Inodos(char* _path) {
-	Inodes = (Inodo*)malloc(INODESQTY*sizeof(Inodo));
+//	Inodes = (Inodo*)malloc(INODESQTY*sizeof(Inodo));
 	
 	ifstream fs(_path, ios::binary);
 	for(int i=0;i<INODESQTY;i++)
@@ -141,6 +141,10 @@ void Inodos::saveToFile(const char *_path) {
 
 void Inodos::changeFather(int _index, int _indexNewFather) {
 	Inodes[_index].father = _indexNewFather;
+}
+
+void Inodos::changeFileMode	(int _index, int _newFileMode) {
+	Inodes[_index].file_mode = _newFileMode;
 }
 
 Inodos::~Inodos() {

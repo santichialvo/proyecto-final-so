@@ -35,7 +35,7 @@ void FileSystem::WritePrompt()
 	cout<<path<<"$ ";
 }
 
-void FileSystem::listChildren()
+void FileSystem::listChildren(int _mode)
 {
 	if (!getPermission(actualInode,0))
 	{
@@ -51,10 +51,24 @@ void FileSystem::listChildren()
 				rlutil::setColor(2);
 			else
 				rlutil::setColor(14);
-			cout<<Inodes->getInodo(i).name<<endl;
+			if (_mode==0)
+				cout<<Inodes->getInodo(i).name<<endl;
+			else if (_mode==1)
+				cout<<showFileMode(Inodes->getInodo(i).file_mode,2)<<
+				showFileMode(Inodes->getInodo(i).file_mode,1)<<
+				showFileMode(Inodes->getInodo(i).file_mode,0)<<" "<<
+				users[currentUserID].userName<<
+				" "<<Inodes->getInodo(i).name<<endl;
 			rlutil::setColor(15);
 		}
 	}
+}
+
+int FileSystem::showFileMode(int _filemode,int _mode)
+{
+	int number = _mode==0?7:_mode==1?7<<3:7<<6;
+	int offset = _mode==0?0:_mode==1?3:6;
+	return (_filemode&number)>>offset;
 }
 
 bool FileSystem::verifyDirName(const char * _path, int _actualInode)
@@ -301,6 +315,18 @@ void FileSystem::save_pointers(string _path)
 void FileSystem::save_inodes(string _path)
 {
 	Inodes->saveToFile(_path.c_str());
+}
+
+void FileSystem::chmod(int _newmode, string _path)
+{
+	int inode = stringToInode(_path);
+	if(inode == -1)
+	{
+		cout<<"Direccion invalida"<<endl;
+		return;
+	}
+	Inodes->changeFileMode(inode,_newmode);
+	
 }
 
 FileSystem::~FileSystem() {
