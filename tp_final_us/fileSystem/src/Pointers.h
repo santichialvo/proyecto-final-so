@@ -4,7 +4,7 @@
 #include "Block.h"
 
 #define POINTERSQTY 50	       	//amount of block pointers (single or double)
-#define POINTERSPERBLOCKQTY 256	//amount of pointers in a block
+#define POINTERSPERBLOCKQTY 256		//amount of pointers in a block
 
 struct Pointer {
 	int *index;        			//index of the pointer
