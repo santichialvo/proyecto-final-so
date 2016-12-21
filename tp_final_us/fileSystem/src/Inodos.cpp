@@ -30,6 +30,11 @@ Inodos::Inodos(char* _path) {
 		fs.read((char*)&Inodes[i].sipointer, sizeof(int));
 		fs.read((char*)&Inodes[i].dipointer, sizeof(int));
 	}
+	if (!fs.is_open()) 
+	{
+		for(int i=0;i<INODESQTY;i++)
+			Inodes[i].used = false;
+	}
 	fs.close();
 }
 
@@ -51,7 +56,7 @@ void Inodos::mkfile(const char* _name, int _permission, int _ownerid, int _group
 				byte* _data, int _sizeofData, Pointers &_pointers, Block &_blocks)
 {
 	if(_sizeofData>FILESIZEMAX) {
-		cout<<"Invalid size of file";
+		cout<<"Invalid size of file"<<endl;
 		return;
 	}
 
@@ -72,10 +77,10 @@ void Inodos::mkfile(const char* _name, int _permission, int _ownerid, int _group
 		_sizeofData-=BLOCK_SIZE;
 		if (_sizeofData<=0) return;
 	}
-	Inodes[index].sipointer = _pointers.saveDirect(_data,_sizeofData,_blocks);
-	_sizeofData-=(BLOCK_SIZE*POINTERSQTY);
+	Inodes[index].sipointer = _pointers.saveDirect(_data+(BLOCK_SIZE*4),_sizeofData,_blocks);
+	_sizeofData-=(BLOCK_SIZE*POINTERSPERBLOCKQTY);
 	if(_sizeofData<=0) return;
-	Inodes[index].dipointer = _pointers.saveIndirect(_data, _sizeofData, _blocks);
+	Inodes[index].dipointer = _pointers.saveIndirect(_data+(BLOCK_SIZE*4 + BLOCK_SIZE*POINTERSPERBLOCKQTY), _sizeofData, _blocks);
 }
 
 void Inodos::deleteInodo(int _index, Pointers &_pointers, Block &_blocks) {
@@ -98,6 +103,25 @@ void Inodos::deleteInodo(int _index, Pointers &_pointers, Block &_blocks) {
 	}
 }
 
+void Inodos::catInodo(int _index, Pointers &_pointers, Block &_blocks) 
+{
+	int sizeofData = Inodes[_index].size;
+	
+	if(Inodes[_index].isFile)
+	{
+		for(int i=0;i<4;i++)
+		{
+			_blocks.catBlock(Inodes[_index].directs[i],sizeofData);
+			sizeofData -= BLOCK_SIZE;
+			if(sizeofData<=0) return;
+		}
+		_pointers.catDirect(Inodes[_index].sipointer, _blocks, sizeofData);
+		sizeofData -= (BLOCK_SIZE*POINTERSPERBLOCKQTY);
+		if(sizeofData<=0) return;
+		
+		_pointers.catIndirect(Inodes[_index].dipointer, _blocks, sizeofData);
+	}
+}
 
 int Inodos::next_free() 
 {
@@ -145,6 +169,25 @@ void Inodos::changeFather(int _index, int _indexNewFather) {
 
 void Inodos::changeFileMode	(int _index, int _newFileMode) {
 	Inodes[_index].file_mode = _newFileMode;
+}
+
+void Inodos::getInodoInfo() {
+	cout<<"INODES USED: "<<endl;
+	for(int i=0;i<INODESQTY;i++) 
+	{ 
+		if (Inodes[i].used)
+		{
+			rlutil::setColor(12);
+			cout<<i<<" ";
+		}
+		else 
+		{
+			rlutil::setColor(15);
+			cout<<i<<" ";
+		}
+	}
+	cout<<endl<<endl;
+	rlutil::setColor(15);
 }
 
 Inodos::~Inodos() {

@@ -43,7 +43,9 @@ public:
 	Inodo getInodo		(int _index);
 	void changeFather	(int _index, int _indexNewFather);
 	void saveToFile		(const char* _path);
-	void changeFileMode	(int _index, int _newFileMode);
+	void changeFileMode	(int _index, int _newFileMode);	
+	void catInodo		(int _index, Pointers &_pointers, Block &_blocks);
+	void getInodoInfo	();
 	
 	~Inodos();
 };

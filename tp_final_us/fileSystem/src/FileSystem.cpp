@@ -261,6 +261,28 @@ void FileSystem::del(int _inode)
 	Inodes->deleteInodo(_inode,*pointers,*blocks);
 }
 
+void FileSystem::cat(int _inode)
+{
+	if (_inode==-1)
+	{
+		cout<<"El archivo/directorio no existe"<<endl;
+		return;
+	}
+	
+	if(!getPermission(_inode,1)&&!getPermission(_inode,2))
+	{
+		cout<<"No tiene permisos para borrar este directorio o archivo"<<endl;
+		return;
+	}
+	
+	if(!Inodes->getInodo(_inode).isFile)
+	{
+		cout<<"No es un archivo"<<endl;
+		return;
+	}
+	Inodes->catInodo(_inode,*pointers,*blocks);
+}
+
 void FileSystem::showTree()
 {
 	cout<<"|"<<Inodes->getInodo(0).name<<endl;
@@ -302,6 +324,11 @@ void FileSystem::erase(string _path)
 	del(stringToInode(_path));
 }
 
+void FileSystem::show(string _path)
+{
+	cat(stringToInode(_path));
+}
+
 void FileSystem::save_blocks(string _path)
 {
 	blocks->saveToFile(_path.c_str());
@@ -327,6 +354,21 @@ void FileSystem::chmod(int _newmode, string _path)
 	}
 	Inodes->changeFileMode(inode,_newmode);
 	
+}
+
+void FileSystem::show_BlockInfo()
+{
+	blocks->getBlockInfo();
+}
+
+void FileSystem::show_PointerInfo()
+{
+	pointers->getPointerInfo();
+}
+
+void FileSystem::show_InodesInfo()
+{
+	Inodes->getInodoInfo();
 }
 
 FileSystem::~FileSystem() {

@@ -1,5 +1,6 @@
 #include "Block.h"
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -33,12 +34,25 @@ int Block::saveBlock(byte* _data, int _sizeofData)
 	
 	data[index] = (byte)1;
 	
+//	cout<<index<<endl;
 	return index;
 }
 
 void Block::deleteBlock(int _index)
 {
 	data[_index] = (byte)0;
+}
+
+void Block::catBlock(int _index, int BLOCK_REMAIN)
+{	int i=0;
+	int offset = (BLOCK_SIZE<=BLOCK_REMAIN)? BLOCK_SIZE : BLOCK_REMAIN ; 
+	while(i<offset)
+	{
+		cout<< data[_index*BLOCK_SIZE + i];
+		++i;
+	}
+	if(offset<BLOCK_SIZE) cout<<endl;
+//	cout<<_index<<endl;
 }
 
 void Block::saveToFile(const char *_path) 
@@ -52,3 +66,21 @@ Block::~Block() {
 	
 }
 
+void Block::getBlockInfo() 
+{
+	cout<<"DATA BLOCKS USED: "<<endl;
+	for(int i=0;i<BLOCK_QTY;i++) { 
+		if (data[i] == (byte)1)
+		{
+			rlutil::setColor(12);
+			cout<<i<<" ";
+		}
+		else 
+		{
+			rlutil::setColor(15);
+			cout<<i<<" ";
+		}
+	}
+	cout<<endl<<endl;
+	rlutil::setColor(15);
+}

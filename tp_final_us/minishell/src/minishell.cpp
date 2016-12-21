@@ -89,7 +89,7 @@ int parseCommand(char * commandLine, struct command_t * command) {
 	command->argv[i++] = NULL;
 	
 	if (DEBUG_PARSECOM) {
-		printf("Size del array: %i\n", sizeof(*command->argv));
+//		printf("Size del array: %i\n", sizeof(*command->argv));
 		
 		int j;
 		for(j=0; j<i; j++) {
@@ -448,5 +448,6 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
+	printf("\nMinishell finalizada \n");
 	exit(EXIT_SUCCESS);
 }

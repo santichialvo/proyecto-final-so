@@ -1,5 +1,4 @@
 #include "System.h"
-#include <climits>
 
 System::System() {
 	
@@ -185,7 +184,7 @@ void System::runSystem()
 				if (!(*itcommands).compare("<"))
 				{
 					itcommands++;
-					ifstream t(_TEMP_DIR+(*itcommands));
+					ifstream t(_TEXT_DIR""+(*itcommands));
 					if (!t.fail())
 					{
 						t.seekg(0, std::ios::end);
@@ -220,6 +219,17 @@ void System::runSystem()
 					break;
 				}
 				fs.erase(*itcommands);
+				break;
+			}
+		case str2int("cat"):
+			{
+				itcommands++;
+				if (itcommands==commands.end())
+				{
+					cout<<"cat: operacion invalida"<<endl;
+					break;
+				}
+				fs.show(*itcommands);
 				break;
 			}
 		case str2int("save"):
@@ -261,6 +271,13 @@ void System::runSystem()
 					break;
 				}
 				fs.chmod(newmode,*itcommands);
+				break;
+			}
+		case str2int("info"):
+			{
+				fs.show_BlockInfo();
+				fs.show_PointerInfo();
+				fs.show_InodesInfo();
 				break;
 			}
 		default:

@@ -39,26 +39,33 @@ private:
 	int      	stringToInode(string _command);
 public:
 	FileSystem();
-	void WritePrompt    ();
-	void listChildren   (int _mode);
-	void increaseLevel  ();
-	void changeDir      (string _dir);
-	void makeFile       (string _name, int _father, int _permission, byte* _data, int _sizeofData);
-	void makeDir        (string _name, int _father, int _permission);
-	void del            (int _inode);
-	void showTree       ();
-	void changeUser    	(int _new);
-	void makeFile       (string _path, unsigned char* _data, int _size);
-	void makeDir        (string _path);
-	void move           (string _from, string _to);
-	void chmod 			(int _newmode, string _path);
-	int showFileMode	(int _filemode,int _mode);
-	void erase          (string _path);
-	void save_blocks    (string _path);
-	void save_inodes    (string _path);
-	void save_pointers  (string _path);
-	bool verifyDirName  (const char * _path,int _actualInode);
-	~FileSystem();
+	void WritePrompt    	();
+	void listChildren   	(int _mode);
+	void increaseLevel  	();
+	void changeDir      	(string _dir);
+	void makeFile       	(string _name, int _father, int _permission, byte* _data, int _sizeofData);
+	void makeDir        	(string _name, int _father, int _permission);
+	void del            	(int _inode);
+	void showTree       	();
+	void changeUser    		(int _new);
+	void makeFile       	(string _path, unsigned char* _data, int _size);
+	void makeDir        	(string _path);
+	void move           	(string _from, string _to);
+	void chmod 				(int _newmode, string _path);
+	int showFileMode		(int _filemode,int _mode);
+	void erase          	(string _path);
+	void save_blocks    	(string _path);
+	void save_inodes    	(string _path);
+	void save_pointers  	(string _path);
+	bool verifyDirName  	(const char * _path,int _actualInode);
+	
+	void show				(string _path);
+	void cat				(int _inode);
+	void show_BlockInfo		();
+	void show_PointerInfo	();
+	void show_InodesInfo	();
+	
+	~FileSystem				();
 };
 
 #endif

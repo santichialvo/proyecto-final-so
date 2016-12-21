@@ -9,39 +9,46 @@ Pointers::Pointers(char* _path)
 	ifstream fs(_path, ios::binary);
 	for(int i=0;i<POINTERSQTY;i++)
 	{
-		pointers[i].index = (int*)malloc(sizeof(int));
-		fs.read((char*)pointers[i].index, sizeof(int));
+		pointers[i].index = (int*)malloc(POINTERSPERBLOCKQTY*sizeof(int));
+		fs.read((char*)pointers[i].index, POINTERSPERBLOCKQTY*sizeof(int));
 		fs.read((char*)&pointers[i].used, sizeof(bool));
+	}
+	if (!fs.is_open()) 
+	{
+		for(int i=0;i<POINTERSQTY;i++)
+			pointers[i].used = false;
 	}
 	fs.close();
 }
 
 int Pointers::saveDirect(byte* _data, int _sizeofData, Block &_blocks)
 {
-	int index=findNext();
+	int _index=findNext();
 	int i=0;
-	while (_sizeofData>0 && i<POINTERSQTY)
+	while (_sizeofData>0 && i<POINTERSPERBLOCKQTY)
 	{
-		pointers[index].index[i] = 
+		pointers[_index].index[i] = 
 			_blocks.saveBlock(_data+(BLOCK_SIZE*i), _sizeofData>=BLOCK_SIZE?BLOCK_SIZE:_sizeofData);
 		_sizeofData -= BLOCK_SIZE;
 		i++;
 	}
-	return index;
+	pointers[_index].used = true;
+	return _index;
 }
 
 int Pointers::saveIndirect(byte* _data, int _sizeofData, Block &_blocks)
 {
 	int index=findNext();
 	int i=0;
-	while (_sizeofData>0 && i<POINTERSQTY)
+	while (_sizeofData>0 && i<POINTERSPERBLOCKQTY)
 	{
-		pointers[i].index[i] = 
-			saveDirect(_data+(BLOCK_SIZE*i),_sizeofData>=BLOCK_SIZE?BLOCK_SIZE:_sizeofData,_blocks);
+//		pointers[index].index[i] = 
+			saveDirect(_data+(BLOCK_SIZE*i),_sizeofData>=(BLOCK_SIZE*POINTERSPERBLOCKQTY)?(BLOCK_SIZE*POINTERSPERBLOCKQTY):_sizeofData,_blocks);
 		_sizeofData-=(BLOCK_SIZE*POINTERSPERBLOCKQTY);
 		if (_sizeofData<=0) break;
 		i++;
 	}
+	pointers[index].used = true;
 	return index;
 }
 
@@ -70,6 +77,7 @@ void Pointers::saveToFile(const char* _path)
 
 void Pointers::deleteDirect(int _index, Block &_blocks, int _sizeofData)
 {
+	pointers[_index].used = false;
 	for(int i=0;i<POINTERSPERBLOCKQTY;i++)
 	{
 		_blocks.deleteBlock(pointers[_index].index[i]);
@@ -78,16 +86,56 @@ void Pointers::deleteDirect(int _index, Block &_blocks, int _sizeofData)
 	}
 }
 
-void Pointers::deleteIndirect (int _index, Block &_blocks, int _sizeofData)
+void Pointers::catDirect(int _index, Block &_blocks, int _sizeofData)
 {
-	for(int i=0;i<4;i++)
+	for(int i=0;i<POINTERSPERBLOCKQTY;i++)
 	{
-		deleteDirect(pointers[_index].index[i],_blocks,_sizeofData<=256?_sizeofData:256);
-		_sizeofData-=1024;
+		_blocks.catBlock(pointers[_index].index[i],_sizeofData);
+		_sizeofData -= BLOCK_SIZE;
 		if(_sizeofData <= 0) return;
 	}
 }
 
+void Pointers::deleteIndirect (int _index, Block &_blocks, int _sizeofData)
+{
+	pointers[_index].used = false;
+	for(int i=0;i<POINTERSPERBLOCKQTY;i++)
+	{
+		deleteDirect(/*pointers[_index].index[i]*/_index,_blocks,_sizeofData<=(POINTERSPERBLOCKQTY*BLOCK_SIZE)?_sizeofData:(POINTERSPERBLOCKQTY*BLOCK_SIZE));
+		_sizeofData-=(POINTERSPERBLOCKQTY*BLOCK_SIZE);
+		if(_sizeofData <= 0) return;
+	}
+}
+
+void Pointers::catIndirect (int _index, Block &_blocks, int _sizeofData)
+{
+	for(int i=0;i<POINTERSPERBLOCKQTY;i++)
+	{
+		catDirect(/*pointers[_index].index[i]*/_index,_blocks,_sizeofData<=(POINTERSPERBLOCKQTY*BLOCK_SIZE)?_sizeofData:(POINTERSPERBLOCKQTY*BLOCK_SIZE));
+		_sizeofData-=(POINTERSPERBLOCKQTY*BLOCK_SIZE);
+		if(_sizeofData <= 0) return;
+	}
+}
+
+void Pointers::getPointerInfo()
+{
+	cout<<"POINTERS BLOCKS USED: "<<endl;
+	for(int i=0;i<POINTERSQTY;i++) 
+	{ 
+		if (pointers[i].used)
+		{
+			rlutil::setColor(12);
+			cout<<i<<" ";
+		}
+		else 
+		{
+			rlutil::setColor(15);
+			cout<<i<<" ";
+		}
+	}
+	cout<<endl<<endl;
+	rlutil::setColor(15);
+}
 
 Pointers::~Pointers() {
 	
