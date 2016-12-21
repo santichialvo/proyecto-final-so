@@ -40,7 +40,7 @@ Inodos::Inodos(char* _path) {
 
 void Inodos::mkdir(const char* _name, int _permission, int _ownerid, int _groupid, int _father) 
 {
-	int index = next_free();
+	int index = strcmp(_name,"root")?next_free():0;
 	
 	strcpy(Inodes[index].name, _name);
 	Inodes[index].file_mode = _permission;

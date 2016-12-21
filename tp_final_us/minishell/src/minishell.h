@@ -9,7 +9,7 @@
 #define MAX_PATHS       		64
 #define MAX_PATH_LEN    		96
 #define MAX_PIPESCOMMANDS 	5
-#define DEBUG_PARSEPATH		1
+#define DEBUG_PARSEPATH		0
 #define DEBUG_READCOM			0
 #define DEBUG_PARSECOM		0
 
